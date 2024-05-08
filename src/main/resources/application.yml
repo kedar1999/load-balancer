@@ -1,0 +1,14 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: load-balancer
+
+load-balancer:
+  algorithm: "ROUND_ROBIN"
+  app-server-details:
+    - url: "https://qa-portal-next.moneytap.com/portal-next-api"
+      health-check-url: "https://qa-portal-next.moneytap.com/portal-next-api/health"
+#    - url: "https://qa-runr.moneytap.com/runr-api"
+#      health-check-url: "https://qa-runr.moneytap.com/runr-api/health"
