@@ -45,7 +45,8 @@ public class ReverseProxyService {
 
         try {
             DynamicRequestForwardDecider.requestInitiated(appServerUrl);
-            responseEntity = restHttpService.makeActualHttpCall(appServerUrl, getBody(servletRequest), url, headers, method);
+            responseEntity = makeHttpCall(appServerUrl, getBody(servletRequest), url, headers, method);
+            // = restHttpService.makeActualHttpCall(appServerUrl, getBody(servletRequest), url, headers, method);
             DynamicRequestForwardDecider.requestTerminated(appServerUrl);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN) {
@@ -54,6 +55,13 @@ public class ReverseProxyService {
             return ResponseEntity.status(e.getStatusCode()).headers(e.getResponseHeaders()).body(e.getResponseBodyAsString());
         }
         return responseEntity;
+    }
+
+    private ResponseEntity<String> makeHttpCall(String appServerUrl, Object body, String url, HttpHeaders headers, HttpMethod method) {
+        if (headers != null && headers.containsKey("enableMock")) {
+            return ResponseEntity.ok("");
+        }
+        return restHttpService.makeActualHttpCall(appServerUrl, body, url, headers, method);
     }
 
     private Object getBody(HttpServletRequest request) throws IOException, ServletException {

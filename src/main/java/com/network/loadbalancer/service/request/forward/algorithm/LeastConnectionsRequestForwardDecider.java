@@ -1,5 +1,9 @@
 package com.network.loadbalancer.service.request.forward.algorithm;
 
+import com.network.loadbalancer.config.LoadBalancerApplicationContext;
+import com.network.loadbalancer.config.LoadBalancerConfig;
+import com.network.loadbalancer.model.AppServerDetail;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -62,5 +66,47 @@ public class LeastConnectionsRequestForwardDecider extends DynamicRequestForward
             newAppServers.add(appServerUrl);
             connectionsToAppServersMap.put(increasedConnections, newAppServers);
         }
+    }
+
+    @Override
+    public void handleAppServerRegistration(String appServerUrl) {
+        appServerToConnectioMap.put(appServerUrl, 0);
+        if (connectionsToAppServersMap.containsKey(0)) {
+            connectionsToAppServersMap.get(0).add(appServerUrl);
+        } else {
+            connectionsToAppServersMap.put(0, new HashSet<>());
+        }
+    }
+
+    @Override
+    public void handleAppServerRemoval(String appServerUrl) {
+        connectionsToAppServersMap.get(appServerToConnectioMap.get(appServerUrl)).remove(appServerUrl);
+        appServerToConnectioMap.remove(appServerUrl);
+    }
+
+    @Override
+    public void handleHealthSuccess(String appServerUrl) {
+        handleAppServerRegistration(appServerUrl);
+    }
+
+    @Override
+    public void handleHealthFailure(String appServerUrl) {
+        handleAppServerRemoval(appServerUrl);
+    }
+
+    @PostConstruct
+    public void construct() {
+        LoadBalancerConfig loadBalancerConfig = LoadBalancerApplicationContext.getBean(LoadBalancerConfig.class);
+        for (AppServerDetail appServerDetail: loadBalancerConfig.getAppServerDetails()) {
+            appServerToConnectioMap.put(appServerDetail.getUrl(), 0);
+            if (connectionsToAppServersMap.containsKey(0)) {
+                connectionsToAppServersMap.get(0).add(appServerDetail.getUrl());
+            } else {
+                Set<String> s = new HashSet<>();
+                s.add(appServerDetail.getUrl());
+                connectionsToAppServersMap.put(0, s);
+            }
+        }
+
     }
 }

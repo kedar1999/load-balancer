@@ -6,9 +6,12 @@ spring:
     name: load-balancer
 
 load-balancer:
-  algorithm: "ROUND_ROBIN"
+  algorithm: "LEAST_CONNECTIONS"
   app-server-details:
-    - url: "https://qa-portal-next.moneytap.com/portal-next-api"
-      health-check-url: "https://qa-portal-next.moneytap.com/portal-next-api/health"
-#    - url: "https://qa-runr.moneytap.com/runr-api"
-#      health-check-url: "https://qa-runr.moneytap.com/runr-api/health"
+    - url: "https://ip-address-1.com"
+      health-check-url: "https://ip-address-1.com/health"
+    - url: "https://ip-address-2.com"
+      health-check-url: "https://ip-address-2.com/health"
+
+mock:
+  enabled: "true"

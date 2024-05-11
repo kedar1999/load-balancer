@@ -8,21 +8,38 @@ import java.util.Map;
 
 public abstract class DynamicRequestForwardDecider extends RequestForwardDecider {
 
-    private static final Map<Algorithm, DynamicRequestForwardDecider> mapAlgoRequestForwardDeciderMap = new HashMap<>();
+    //private static final Map<Algorithm, DynamicRequestForwardDecider> mapAlgoRequestForwardDeciderMap = new HashMap<>();
 
     public abstract void handleRequestTerminated(String appServerUrl);
     public abstract void handleRequestInitiated(String appServerUrl);
 
     @PostConstruct
     public void constructMap() {
-        mapAlgoRequestForwardDeciderMap.put(this.getAlgorithm(), this);
+        RequestForwardDecider.mapAlgoRequestForwardDeciderMap.put(this.getAlgorithm(), this);
     }
 
     public static void requestInitiated(String appServer) {
-        mapAlgoRequestForwardDeciderMap.values().forEach(forwardDecider -> forwardDecider.handleRequestInitiated(appServer));
+        RequestForwardDecider.mapAlgoRequestForwardDeciderMap.values()
+                .forEach(forwardDecider ->
+                {
+                    try {
+                        ((DynamicRequestForwardDecider)forwardDecider).handleRequestInitiated(appServer);
+                    } catch (Exception e) {
+
+                    }
+
+                });
+
     }
 
     public static void requestTerminated(String appServer) {
-        mapAlgoRequestForwardDeciderMap.values().forEach(forwardDecider -> forwardDecider.handleRequestTerminated(appServer));
+        RequestForwardDecider.mapAlgoRequestForwardDeciderMap.values().forEach(forwardDecider ->
+        {
+            try {
+                ((DynamicRequestForwardDecider)forwardDecider).handleRequestTerminated(appServer);
+            } catch (Exception e) {
+
+            }
+        });
     }
 }

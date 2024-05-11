@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
 import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
+import org.springframework.web.util.UriBuilderFactory;
 import reactor.netty.http.client.HttpClient;
 
 import java.util.HashSet;
@@ -45,7 +46,7 @@ public class RestHttpService {
 
         HttpClient httpClient = HttpClient.create()
                 .option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) 10000)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
                 .doOnConnected(conn -> conn.addHandlerLast(new ReadTimeoutHandler(10000, TimeUnit.MILLISECONDS)));
 
         ReactorClientHttpConnector httpConnector = new ReactorClientHttpConnector(httpClient);
