@@ -18,7 +18,8 @@ public abstract class RequestForwardDecider {
     public abstract String getAppServerUrlToForward();
 
     public enum Algorithm {
-        ROUND_ROBIN
+        ROUND_ROBIN,
+        LEAST_CONNECTIONS
     }
 
     @PostConstruct

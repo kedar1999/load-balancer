@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AppServerManager {
 
-    private static List<String> appServers = new ArrayList<>();
+    public static List<String> appServers = new ArrayList<>();
     private static Map<String, AppServerDetail> appServerDetailMap;
 
     private final LoadBalancerConfig loadBalancerConfig;
@@ -75,9 +75,5 @@ public class AppServerManager {
         for (AppServerDetail appServerDetail: appServerDetails)
             appServerDetailMap.put(appServerDetail.getUrl(), appServerDetail);
         appServers = new ArrayList<>(appServerDetailMap.keySet().stream().toList());
-    }
-
-    public static String getAppServer(int no) {
-        return appServers.get(no % appServers.size());
     }
 }

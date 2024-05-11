@@ -1,6 +1,7 @@
 package com.network.loadbalancer.service;
 
 import com.network.loadbalancer.config.LoadBalancerConfig;
+import com.network.loadbalancer.service.request.forward.algorithm.DynamicRequestForwardDecider;
 import com.network.loadbalancer.service.request.forward.algorithm.RequestForwardDecider;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,17 +41,17 @@ public class ReverseProxyService {
         String appServerUrl = getServerUrl();
 
         //reverse proxy the request to app server
-        ResponseEntity<String> responseEntity = null;
+        ResponseEntity<String> responseEntity;
 
         try {
+            DynamicRequestForwardDecider.requestInitiated(appServerUrl);
             responseEntity = restHttpService.makeActualHttpCall(appServerUrl, getBody(servletRequest), url, headers, method);
+            DynamicRequestForwardDecider.requestTerminated(appServerUrl);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED || e.getStatusCode() == HttpStatus.FORBIDDEN) {
                 return ResponseEntity.status(e.getStatusCode()).build();
             }
             return ResponseEntity.status(e.getStatusCode()).headers(e.getResponseHeaders()).body(e.getResponseBodyAsString());
-        } catch (Exception e) {
-            throw e;
         }
         return responseEntity;
     }

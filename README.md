@@ -25,6 +25,7 @@ This is the service which works as a load balancer
 # Low Level flow
 - When a client makes a http call to load balancer, the request is handled by reverseProxyService.
 - The routing algorithm comes into picture and provides the app server to which the request needs to be forwarded.
+- At every api server connection start and connection termination we call change the app server to connection mapping.
 - [WebClient](https://docs.spring.io/spring-framework/reference/web/webflux-webclient.html) makes an http call to app server provided by the `RequestForwardDecider`, and responds back to the client with the received response from the app server.
 ![LLD-FLOW](https://github.com/kedar1999/load-balancer/assets/56604563/5682ef48-f685-4c30-a223-aec3e022a60d)
 
